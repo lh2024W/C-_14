@@ -1,5 +1,10 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.PortableExecutable;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace C__14
 {
@@ -11,51 +16,47 @@ namespace C__14
             string readText = sr.ReadToEnd();
             //Console.WriteLine(readText);
             sr.Close();
-           
-            /*for (int i = 0; i < readText.Length; i++)
-            {
-                if (char.IsPunctuation(readText[i]))
-                   {
-                     readText.Replace(readText[i], ' ');
-                   }
-            }
-            Console.WriteLine(readText);
-            */
 
-            /*Char[] punct = new Char[] { '.', '?', '!', ',', ';', ':', '-', ' '};
+            string noPunctuationText = Regex.Replace(readText, @"[^\w\s]", "");
+            // Console.WriteLine(noPunctuationText);
 
-            for (int i = 0; i < readText.Length; i++)
+            // удаление всех переходов на след.строку
+            string singleLineText = Regex.Replace(noPunctuationText, @"\s+", " ");
+            // Console.WriteLine(singleLineText);
+
+            // замена нескольких пробелов подряд на одинарный
+            string normalizedText = Regex.Replace(singleLineText, @"\s{2,}", " ");
+            //Console.WriteLine(normalizedText);
+            
+            Dictionary<string, int> d = [];
+
+            foreach (string line in normalizedText.Split(" "))
             {
-                for (int j = 0; j < punct.Length; j++)
+                if (line.Length > 3 && line.Length < 20)
                 {
-                    if (readText[i] == punct[j])
+                    if (!d.ContainsKey(line))
                     {
-                        string readText1 = readText.Replace(readText[i], ' ');
+                        d.Add(line, 1);
+                    }
+                    else
+                    {
+                        d[line] += 1;
                     }
                 }
-            }*/
-
-
-            //Console.WriteLine(readText.Trim(new Char[] {'.', '?', '!', ',', ';', ':', '-', ' '}));
-
-
-
-            /*Dictionary<int, string> d = new Dictionary<int, string>();
-
-            for (int i = 0; i < readText.Length; i++)
-            {
-                foreach (string line in readText.Split(" "))
-                {
-                    d.Add(i, line);
-                }
             }
 
-            foreach (KeyValuePair<int, string> kvp in d)
+            // упорядочить словарь по количеству слов
+            var sort = d.OrderByDescending(x => x.Value);//По убыванию
+
+            // Печать результатов подсчета слов
+            Console.WriteLine("Всего количество слов: {0}", d.Count);
+
+            foreach (var pair in sort)
             {
-                Console.WriteLine("Key = {0}, Value = {1}",
-                    kvp.Key, kvp.Value);
-            }*/
+                Console.WriteLine("Всего упоминаний слова -  {0}: {1}", pair.Key, pair.Value);
+            }
+                
         }
     }
-    }
+}
 
