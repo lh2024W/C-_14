@@ -53,7 +53,7 @@ namespace C__14
 
             foreach (var pair in sort)
             {
-                Console.WriteLine("Всего упоминаний слова -  {0}: {1}", pair.Key, pair.Value);
+                Console.Write(pair.Key + " " + pair.Value + ", ");
             }
                 
         }
